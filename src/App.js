@@ -10,8 +10,10 @@ const days = [
   "saturday",
   "sunday",
 ];
+const devices = ["esp1", "esp2"];
 
 function App() {
+  const [deviceId, setDeviceId] = useState("esp1");
   const [day, setDay] = useState("monday");
   const [hour, setHour] = useState(12);
   const [minute, setMinute] = useState(0);
@@ -26,6 +28,7 @@ function App() {
   const handleSubmit = async () => {
     try {
       const res = await axios.post("/api/schedule", {
+        deviceId,
         day,
         hour,
         minute,
@@ -51,6 +54,18 @@ function App() {
   return (
     <div style={{ padding: 20 }}>
       <h2>Programare Udare Valve</h2>
+
+      <div>
+        <label>Dispozitiv (ESP32): </label>
+        <select value={deviceId} onChange={(e) => setDeviceId(e.target.value)}>
+          {devices.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div>
         <label>Ziua: </label>
         <select value={day} onChange={(e) => setDay(e.target.value)}>
@@ -61,6 +76,7 @@ function App() {
           ))}
         </select>
       </div>
+
       <div>
         <label>Ora: </label>
         <input
@@ -71,6 +87,7 @@ function App() {
           max="23"
         />
       </div>
+
       <div>
         <label>Minut: </label>
         <input
@@ -81,14 +98,16 @@ function App() {
           max="59"
         />
       </div>
+
       <div>
-        <label>Interval per valvă (secunde): </label>
+        <label>Interval per valvă (sec): </label>
         <input
           type="number"
           value={interval}
           onChange={(e) => setInterval(+e.target.value)}
         />
       </div>
+
       <button onClick={handleSubmit}>Salvează Programarea</button>
 
       <div style={{ marginTop: 40 }}>
@@ -99,8 +118,8 @@ function App() {
           <ul>
             {schedules.map((s, i) => (
               <li key={i}>
-                {s.day}, ora {s.hour}:{s.minute.toString().padStart(2, "0")} →{" "}
-                {s.interval}s
+                <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:
+                {s.minute.toString().padStart(2, "0")} → {s.interval}s
               </li>
             ))}
           </ul>
