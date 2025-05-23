@@ -1,37 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const days = ['luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă', 'duminică'];
+const days = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
 
 function App() {
-  const [day, setDay] = useState('luni');
+  const [day, setDay] = useState("monday");
   const [hour, setHour] = useState(12);
   const [minute, setMinute] = useState(0);
   const [interval, setInterval] = useState(10);
   const [schedules, setSchedules] = useState([]);
 
   const fetchSchedules = async () => {
-    const res = await axios.get('/api/schedules');
+    const res = await axios.get("/api/schedules");
     setSchedules(res.data);
   };
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post('/api/schedule', {
+      const res = await axios.post("/api/schedule", {
         day,
         hour,
         minute,
-        interval
+        interval,
       });
 
       if (res.status === 200 && res.data.success) {
-        alert('✅ Programare salvată!');
+        alert("✅ Programare salvată!");
         fetchSchedules();
       } else {
-        alert('⚠️ Eroare la salvare.');
+        alert("⚠️ Eroare la salvare.");
       }
     } catch (error) {
-      alert('❌ Eroare la conectare.');
+      alert("❌ Eroare la conectare.");
       console.error(error);
     }
   };
@@ -45,21 +53,41 @@ function App() {
       <h2>Programare Udare Valve</h2>
       <div>
         <label>Ziua: </label>
-        <select value={day} onChange={e => setDay(e.target.value)}>
-          {days.map(d => <option key={d} value={d}>{d}</option>)}
+        <select value={day} onChange={(e) => setDay(e.target.value)}>
+          {days.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
         </select>
       </div>
       <div>
         <label>Ora: </label>
-        <input type="number" value={hour} onChange={e => setHour(+e.target.value)} min="0" max="23" />
+        <input
+          type="number"
+          value={hour}
+          onChange={(e) => setHour(+e.target.value)}
+          min="0"
+          max="23"
+        />
       </div>
       <div>
         <label>Minut: </label>
-        <input type="number" value={minute} onChange={e => setMinute(+e.target.value)} min="0" max="59" />
+        <input
+          type="number"
+          value={minute}
+          onChange={(e) => setMinute(+e.target.value)}
+          min="0"
+          max="59"
+        />
       </div>
       <div>
         <label>Interval per valvă (secunde): </label>
-        <input type="number" value={interval} onChange={e => setInterval(+e.target.value)} />
+        <input
+          type="number"
+          value={interval}
+          onChange={(e) => setInterval(+e.target.value)}
+        />
       </div>
       <button onClick={handleSubmit}>Salvează Programarea</button>
 
@@ -71,7 +99,8 @@ function App() {
           <ul>
             {schedules.map((s, i) => (
               <li key={i}>
-                {s.day}, ora {s.hour}:{s.minute.toString().padStart(2, '0')} → {s.interval}s
+                {s.day}, ora {s.hour}:{s.minute.toString().padStart(2, "0")} →{" "}
+                {s.interval}s
               </li>
             ))}
           </ul>
