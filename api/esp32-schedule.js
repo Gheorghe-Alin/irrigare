@@ -5,6 +5,14 @@ const uri = process.env.MONGODB_URI;
 let cachedClient = null;
 
 export default async function handler(req, res) {
+  const { id } = req.query;
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ error: "Missing device ID in query (e.g. ?id=esp1)" });
+  }
+
   try {
     if (!cachedClient) {
       cachedClient = new MongoClient(uri);
@@ -14,28 +22,28 @@ export default async function handler(req, res) {
     const db = cachedClient.db("relay");
     const collection = db.collection("schedules");
 
-    // Ora României, ziua în engleză (ex: friday)
     const now = moment().tz("Europe/Bucharest");
-    const currentDay = now.format("dddd").toLowerCase(); // monday, tuesday, ...
+    const currentDay = now.format("dddd").toLowerCase(); // ex: friday
     const hour = now.hour();
     const minute = now.minute();
 
-    console.log("🕒 [Romania] Server time:", currentDay, hour + ":" + minute);
+    console.log(
+      "⏰ Server time:",
+      currentDay,
+      hour + ":" + minute,
+      "| deviceId:",
+      id
+    );
 
-    // Căutare cu potrivire exactă
     const active = await collection.findOne({
+      deviceId: id.toLowerCase(),
       day: currentDay,
-      hour: hour,
-      minute: minute,
+      hour,
+      minute,
     });
 
-    if (active) {
-      res.status(200).json(active);
-    } else {
-      res.status(200).json({});
-    }
+    res.status(200).json(active || {});
   } catch (err) {
-    console.error("❌ ESP32 Schedule Error:", err);
     res.status(500).json({ error: "Eroare MongoDB", details: err.message });
   }
 }
