@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+
 import axios from "axios";
+import ManualControl from "./ManualControl";
+import StatusPanel from "./StatusPanel";
 
 const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const devices = ["esp1", "esp2"];
@@ -131,6 +133,9 @@ function MainPage({ onLogout }) {
           </ul>
         )}
       </div>
+
+      <StatusPanel deviceId={deviceId} />
+      <ManualControl deviceId={deviceId} />
     </div>
   );
 }
