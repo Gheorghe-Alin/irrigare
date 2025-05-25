@@ -67,7 +67,7 @@ function MainPage({ onLogout }) {
         <button onClick={onLogout}>Logout</button>
       </div>
 
-      <h2>Programare Udare Valve</h2>
+      <h2>Programare robineti</h2>
 
       <div>
         <label>Dispozitiv (ESP32): </label>
