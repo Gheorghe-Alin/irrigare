@@ -2,13 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const days = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
+  "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
 ];
 const devices = ["esp1", "esp2"];
 
@@ -21,8 +15,12 @@ function MainPage({ onLogout }) {
   const [schedules, setSchedules] = useState([]);
 
   const fetchSchedules = async () => {
-    const res = await axios.get("/api/schedules");
-    setSchedules(res.data);
+    try {
+      const res = await axios.get("/api/schedules");
+      setSchedules(res.data);
+    } catch (err) {
+      console.error("Eroare la citirea programărilor:", err);
+    }
   };
 
   const handleSubmit = async () => {
@@ -32,7 +30,7 @@ function MainPage({ onLogout }) {
         day,
         hour,
         minute,
-        interval,
+        interval
       });
 
       if (res.status === 200 && res.data.success) {
@@ -44,6 +42,18 @@ function MainPage({ onLogout }) {
     } catch (error) {
       alert("❌ Eroare la conectare.");
       console.error(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Sigur vrei să ștergi această programare?")) return;
+
+    try {
+      await axios.delete(`/api/schedule?id=${id}`);
+      fetchSchedules();
+    } catch (err) {
+      alert("Eroare la ștergere.");
+      console.error(err);
     }
   };
 
@@ -63,9 +73,7 @@ function MainPage({ onLogout }) {
         <label>Dispozitiv (ESP32): </label>
         <select value={deviceId} onChange={(e) => setDeviceId(e.target.value)}>
           {devices.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
+            <option key={d} value={d}>{d}</option>
           ))}
         </select>
       </div>
@@ -74,9 +82,7 @@ function MainPage({ onLogout }) {
         <label>Ziua: </label>
         <select value={day} onChange={(e) => setDay(e.target.value)}>
           {days.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
+            <option key={d} value={d}>{d}</option>
           ))}
         </select>
       </div>
@@ -87,8 +93,7 @@ function MainPage({ onLogout }) {
           type="number"
           value={hour}
           onChange={(e) => setHour(+e.target.value)}
-          min="0"
-          max="23"
+          min="0" max="23"
         />
       </div>
 
@@ -98,8 +103,7 @@ function MainPage({ onLogout }) {
           type="number"
           value={minute}
           onChange={(e) => setMinute(+e.target.value)}
-          min="0"
-          max="59"
+          min="0" max="59"
         />
       </div>
 
@@ -122,8 +126,13 @@ function MainPage({ onLogout }) {
           <ul>
             {schedules.map((s, i) => (
               <li key={i}>
-                <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:
-                {s.minute.toString().padStart(2, "0")} → {s.interval}s
+                <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:{s.minute.toString().padStart(2, "0")} → {s.interval}s
+                <button
+                  onClick={() => handleDelete(s._id)}
+                  style={{ marginLeft: 10 }}
+                >
+                  Șterge
+                </button>
               </li>
             ))}
           </ul>
