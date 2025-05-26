@@ -1,10 +1,15 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ManualControl from "./ManualControl";
-import StatusPanel from "./StatusPanel";
 
-const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+const days = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
 const devices = ["esp1", "esp2"];
 
 function MainPage({ onLogout }) {
@@ -27,7 +32,7 @@ function MainPage({ onLogout }) {
         day,
         hour,
         minute,
-        interval
+        interval,
       });
 
       if (res.status === 200 && res.data.success) {
@@ -80,7 +85,9 @@ function MainPage({ onLogout }) {
         <label>Dispozitiv (ESP32): </label>
         <select value={deviceId} onChange={(e) => setDeviceId(e.target.value)}>
           {devices.map((d) => (
-            <option key={d} value={d}>{d}</option>
+            <option key={d} value={d}>
+              {d}
+            </option>
           ))}
         </select>
       </div>
@@ -89,24 +96,42 @@ function MainPage({ onLogout }) {
         <label>Ziua: </label>
         <select value={day} onChange={(e) => setDay(e.target.value)}>
           {days.map((d) => (
-            <option key={d} value={d}>{d}</option>
+            <option key={d} value={d}>
+              {d}
+            </option>
           ))}
         </select>
       </div>
 
       <div>
         <label>Ora: </label>
-        <input type="number" value={hour} onChange={(e) => setHour(+e.target.value)} min="0" max="23" />
+        <input
+          type="number"
+          value={hour}
+          onChange={(e) => setHour(+e.target.value)}
+          min="0"
+          max="23"
+        />
       </div>
 
       <div>
         <label>Minut: </label>
-        <input type="number" value={minute} onChange={(e) => setMinute(+e.target.value)} min="0" max="59" />
+        <input
+          type="number"
+          value={minute}
+          onChange={(e) => setMinute(+e.target.value)}
+          min="0"
+          max="59"
+        />
       </div>
 
       <div>
         <label>Interval per valvă (sec): </label>
-        <input type="number" value={interval} onChange={(e) => setInterval(+e.target.value)} />
+        <input
+          type="number"
+          value={interval}
+          onChange={(e) => setInterval(+e.target.value)}
+        />
       </div>
 
       <button onClick={handleSubmit}>Salvează Programarea</button>
@@ -119,14 +144,23 @@ function MainPage({ onLogout }) {
           <ul>
             {schedules.map((s, i) => (
               <li key={i}>
-                <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:{s.minute.toString().padStart(2, "0")} → {s.interval}s
-                <span style={{ marginLeft: 10, color: s.active ? 'green' : 'gray' }}>
-                  [{s.active ? 'activă' : 'inactivă'}]
+                <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:
+                {s.minute.toString().padStart(2, "0")} → {s.interval}s
+                <span
+                  style={{ marginLeft: 10, color: s.active ? "green" : "gray" }}
+                >
+                  [{s.active ? "activă" : "inactivă"}]
                 </span>
-                <button onClick={() => toggleActive(s._id, !s.active)} style={{ marginLeft: 10 }}>
-                  {s.active ? 'Dezactivează' : 'Activează'}
+                <button
+                  onClick={() => toggleActive(s._id, !s.active)}
+                  style={{ marginLeft: 10 }}
+                >
+                  {s.active ? "Dezactivează" : "Activează"}
                 </button>
-                <button onClick={() => handleDelete(s._id)} style={{ marginLeft: 10 }}>
+                <button
+                  onClick={() => handleDelete(s._id)}
+                  style={{ marginLeft: 10 }}
+                >
                   Șterge
                 </button>
               </li>
@@ -134,9 +168,6 @@ function MainPage({ onLogout }) {
           </ul>
         )}
       </div>
-
-      <StatusPanel deviceId={deviceId} />
-      <ManualControl deviceId={deviceId} />
     </div>
   );
 }

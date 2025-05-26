@@ -8,7 +8,10 @@ export default async function handler(req, res) {
   const { id } = req.query;
 
   if (!id) {
-    return res.status(400).json({ error: 'Missing device ID in query' });
+
+    return res.status(400).json({ error: "Missing device ID in query" });
+
+
   }
 
   try {
@@ -21,7 +24,10 @@ export default async function handler(req, res) {
     const collection = db.collection('schedules');
 
     const now = moment().tz("Europe/Bucharest");
-    const currentDay = now.format('dddd').toLowerCase();
+
+    const currentDay = now.format("dddd").toLowerCase();
+
+
     const hour = now.hour();
     const minute = now.minute();
 
@@ -30,7 +36,9 @@ export default async function handler(req, res) {
       day: currentDay,
       hour,
       minute,
-      active: true
+
+      active: true,
+
     });
 
     res.status(200).json(active || {});

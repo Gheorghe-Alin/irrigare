@@ -1,4 +1,6 @@
-import { MongoClient, ObjectId } from 'mongodb';
+
+import { MongoClient, ObjectId } from "mongodb";
+
 
 const uri = process.env.MONGODB_URI;
 let cachedClient = null;
@@ -64,7 +66,9 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true });
     }
 
-    res.status(405).json({ error: 'Method Not Allowed' });
+
+    res.status(405).json({ error: "Method Not Allowed" });
+
   } catch (err) {
     res.status(500).json({ error: 'Eroare MongoDB', details: err.message });
   }
