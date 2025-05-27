@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./MainPage.css";
+
 
 const days = [
   "monday",
@@ -101,124 +103,74 @@ function MainPage({ onLogout }) {
   }, [deviceId]);
 
   return (
-    <div style={{ padding: 20 }}>
-      <div style={{ textAlign: "right" }}>
-        <button onClick={onLogout}>Logout</button>
-      </div>
+    <div className="container">
+  <div style={{ textAlign: "right" }}>
+    <button onClick={onLogout} className="button">Logout</button>
+  </div>
 
-      <h2>Programare Udare Valve</h2>
+  <h2 className="title">Programare irigatii</h2>
 
-      <div>
-        <label>Dispozitiv (ESP32): </label>
-        <select value={deviceId} onChange={(e) => setDeviceId(e.target.value)}>
-          {devices.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label>Ziua: </label>
-        <select value={day} onChange={(e) => setDay(e.target.value)}>
-          {days.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label>Ora: </label>
-        <input
-          type="number"
-          value={hour}
-          onChange={(e) => setHour(+e.target.value)}
-          min="0"
-          max="23"
-        />
-      </div>
-
-      <div>
-        <label>Minut: </label>
-        <input
-          type="number"
-          value={minute}
-          onChange={(e) => setMinute(+e.target.value)}
-          min="0"
-          max="59"
-        />
-      </div>
-
-      <div>
-        <label>Interval per valvă (sec): </label>
-        <input
-          type="number"
-          value={interval}
-          onChange={(e) => setInterval(+e.target.value)}
-        />
-      </div>
-
-      <button onClick={handleSubmit}>Salvează Programarea</button>
-
-      <div style={{ marginTop: 40 }}>
-        <h3>Programări salvate:</h3>
-        {schedules.length === 0 ? (
-          <p>Nu există programări.</p>
-        ) : (
-          <ul>
-            {schedules.map((s, i) => (
-              <li key={i}>
-                <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:
-                {s.minute.toString().padStart(2, "0")} → {s.interval}s
-                <span
-                  style={{ marginLeft: 10, color: s.active ? "green" : "gray" }}
-                >
-                  [{s.active ? "activă" : "inactivă"}]
-                </span>
-                <button
-                  onClick={() => toggleActive(s._id, !s.active)}
-                  style={{ marginLeft: 10 }}
-                >
-                  {s.active ? "Dezactivează" : "Activează"}
-                </button>
-                <button
-                  onClick={() => handleDelete(s._id)}
-                  style={{ marginLeft: 10 }}
-                >
-                  Șterge
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div style={{ marginTop: 40 }}>
-        <h3>Control Manual Individual (Valve):</h3>
-        {valveStates.map((state, index) => (
-          <div key={index}>
-            Valvă {index + 1}:
-            <button
-              onClick={() => updateValveState(index, true)}
-              disabled={state}
-              style={{ marginLeft: 10 }}
-            >
-              ON
-            </button>
-            <button
-              onClick={() => updateValveState(index, false)}
-              disabled={!state}
-              style={{ marginLeft: 10 }}
-            >
-              OFF
-            </button>
-          </div>
+  <div className="section">
+    <div>
+      <label className="label">Dispozitiv:</label>
+      <select value={deviceId} onChange={(e) => setDeviceId(e.target.value)} className="input">
+        {devices.map((d) => (
+          <option key={d} value={d}>{d}</option>
         ))}
-      </div>
+      </select>
     </div>
+
+    <div>
+      <label className="label">Ziua:</label>
+      <select value={day} onChange={(e) => setDay(e.target.value)} className="input">
+        {days.map((d) => (
+          <option key={d} value={d}>{d}</option>
+        ))}
+      </select>
+    </div>
+
+    <div>
+      <label className="label">Ora:</label>
+      <input type="number" value={hour} onChange={(e) => setHour(+e.target.value)} min="0" max="23" className="input" />
+    </div>
+
+    <div>
+      <label className="label">Minut:</label>
+      <input type="number" value={minute} onChange={(e) => setMinute(+e.target.value)} min="0" max="59" className="input" />
+    </div>
+
+    <div>
+      <label className="label">Interval (sec):</label>
+      <input type="number" value={interval} onChange={(e) => setInterval(+e.target.value)} className="input" />
+    </div>
+
+    <button onClick={handleSubmit} className="button">Salvează Programarea</button>
+  </div>
+
+  <div className="section">
+    <h3 className="title">Control Manual Individual (Valve):</h3>
+    {valveStates.map((state, index) => (
+      <div key={index}>
+        Valvă {index + 1}:
+        <button
+          onClick={() => updateValveState(index, true)}
+          disabled={state}
+          className="button"
+        >
+          ON
+        </button>
+        <button
+          onClick={() => updateValveState(index, false)}
+          disabled={!state}
+          className="button"
+        >
+          OFF
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
+
   );
 }
 
