@@ -19,10 +19,20 @@ function MainPage({ onLogout }) {
   const [minute, setMinute] = useState(0);
   const [interval, setInterval] = useState(10);
   const [schedules, setSchedules] = useState([]);
+  const [valveStates, setValveStates] = useState(Array(16).fill(false));
 
   const fetchSchedules = async () => {
     const res = await axios.get("/api/schedules");
     setSchedules(res.data);
+  };
+
+  const fetchManualStates = async () => {
+    try {
+      const res = await axios.get(`/api/manual-control?id=${deviceId}`);
+      setValveStates(res.data.valveStates);
+    } catch (err) {
+      console.error("Eroare la preluarea stărilor manuale:", err);
+    }
   };
 
   const handleSubmit = async () => {
@@ -69,9 +79,26 @@ function MainPage({ onLogout }) {
     }
   };
 
+  const updateValveState = async (index, newState) => {
+    const updatedStates = [...valveStates];
+    updatedStates[index] = newState;
+    setValveStates(updatedStates);
+
+    try {
+      await axios.post("/api/manual-control", {
+        deviceId: deviceId,
+        valveStates: updatedStates,
+      });
+    } catch (err) {
+      alert("Eroare la actualizarea valvei.");
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchSchedules();
-  }, []);
+    fetchManualStates();
+  }, [deviceId]);
 
   return (
     <div style={{ padding: 20 }}>
@@ -167,6 +194,29 @@ function MainPage({ onLogout }) {
             ))}
           </ul>
         )}
+      </div>
+
+      <div style={{ marginTop: 40 }}>
+        <h3>Control Manual Individual (Valve):</h3>
+        {valveStates.map((state, index) => (
+          <div key={index}>
+            Valvă {index + 1}:
+            <button
+              onClick={() => updateValveState(index, true)}
+              disabled={state}
+              style={{ marginLeft: 10 }}
+            >
+              ON
+            </button>
+            <button
+              onClick={() => updateValveState(index, false)}
+              disabled={!state}
+              style={{ marginLeft: 10 }}
+            >
+              OFF
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
