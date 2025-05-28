@@ -103,7 +103,7 @@ function MainPage({ onLogout }) {
         <button onClick={onLogout} className="button">Logout</button>
       </div>
 
-      <h2 className="title">Programare Udare Valve</h2>
+      <h2 className="title">Programare valve</h2>
 
       <div className="section">
         <div>
@@ -173,7 +173,7 @@ function MainPage({ onLogout }) {
       </div>
 
       <div className="section">
-        <h3 className="title">Control Manual Individual (Valve):</h3>
+        <h3 className="title">Control manual individual (Valve):</h3>
         {valveStates.map((state, index) => (
           <div key={index}>
             Valvă {index + 1}:
