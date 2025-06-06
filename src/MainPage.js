@@ -95,8 +95,12 @@ function MainPage({ onLogout }) {
         deviceId: deviceId,
         valveStates: updatedStates,
       });
+
+      alert(
+        `✅ Valva ${index + 1} ${newState ? "pornită" : "oprită"} cu succes.`
+      );
     } catch (err) {
-      alert("Eroare la actualizarea valvei.");
+      alert("❌ Eroare la actualizarea valvei.");
       console.error(err);
     }
   };
@@ -224,18 +228,21 @@ function MainPage({ onLogout }) {
             Valvă {index + 1}:
             <button
               onClick={() => updateValveState(index, true)}
-              disabled={state}
+              disabled={valveStates[index]}
               className="button"
             >
               ON
             </button>
             <button
               onClick={() => updateValveState(index, false)}
-              disabled={!state}
+              disabled={!valveStates[index]}
               className="button"
             >
               OFF
             </button>
+            <span style={{ marginLeft: 10, fontWeight: 500 }}>
+              ({valveStates[index] ? "Pornită" : "Oprită"})
+            </span>
           </div>
         ))}
       </div>
