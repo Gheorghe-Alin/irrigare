@@ -29,16 +29,13 @@ export default async function handler(req, res) {
 
 
     const hour = now.hour();
-    const minute = now.minute();
 
     const active = await collection.findOne({
       deviceId: id.toLowerCase(),
       day: currentDay,
       hour,
-      minute,
-
       active: true,
-
+      temporaryDisabled: { $ne: true } // ignoră dacă e oprit temporar
     });
 
     res.status(200).json(active || {});
