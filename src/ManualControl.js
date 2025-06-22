@@ -1,6 +1,5 @@
-
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 function ManualControl({ deviceId }) {
   const [valves, setValves] = useState(Array(16).fill(false));
@@ -14,7 +13,9 @@ function ManualControl({ deviceId }) {
   const updateValves = async (newState) => {
     setLoading(true);
     try {
-      await axios.post(`/api/manual-control?id=${deviceId}`, { valves: newState });
+      await axios.post(`/api/manual-control?id=${deviceId}`, {
+        valves: newState,
+      });
       setValves(newState);
     } catch (err) {
       alert("Eroare la actualizare valve.");
