@@ -79,6 +79,12 @@ function MainPage({ onLogout }) {
   const toggleTemporary = async (id, newState) => {
     try {
       await axios.patch(`/api/schedule?id=${id}`, { temporaryDisabled: newState });
+
+      // dacă oprim temporar, trimitem și oprire instantă către ESP
+      if (newState === true) {
+        await axios.post(`/api/stop-request?id=${deviceId}`, { stop: true });
+      }
+
       fetchSchedules();
     } catch (err) {
       alert("Eroare la actualizare temporară.");
