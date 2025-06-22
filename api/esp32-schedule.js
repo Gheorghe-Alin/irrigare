@@ -23,12 +23,13 @@ export default async function handler(req, res) {
     const now = moment().tz("Europe/Bucharest");
     const currentDay = now.format("dddd").toLowerCase(); // ex: "thursday"
     const hour = now.hour();                              // ex: 21
-    // const minute = now.minute(); // ❌ eliminat
+    const minute = now.minute();                          // ex: 35
 
     const active = await collection.findOne({
       deviceId: id.toLowerCase(),
       day: currentDay,
       hour: hour,
+      minute: minute,
       active: true
     });
 
