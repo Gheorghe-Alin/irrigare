@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./MainPage.css";
+import "./MainPage.css"; // Asigură-te că acest fișier există
 
 const days = [
   "monday", "tuesday", "wednesday",
@@ -76,22 +76,6 @@ function MainPage({ onLogout }) {
     }
   };
 
-  const toggleTemporary = async (id, newState) => {
-    try {
-      await axios.patch(`/api/schedule?id=${id}`, { temporaryDisabled: newState });
-
-      // dacă oprim temporar, trimitem și oprire instantă către ESP
-      if (newState === true) {
-        await axios.post(`/api/stop-request?id=${deviceId}`, { stop: true });
-      }
-
-      fetchSchedules();
-    } catch (err) {
-      alert("Eroare la actualizare temporară.");
-      console.error(err);
-    }
-  };
-
   const updateValveState = async (index, newState) => {
     const updatedStates = [...valveStates];
     updatedStates[index] = newState;
@@ -104,16 +88,6 @@ function MainPage({ onLogout }) {
       });
     } catch (err) {
       alert("Eroare la actualizarea valvei.");
-      console.error(err);
-    }
-  };
-
-  const handleImmediateStop = async () => {
-    try {
-      await axios.post(`/api/stop-request?id=${deviceId}`, { stop: true });
-      alert("🛑 Cerere de oprire trimisă!");
-    } catch (err) {
-      alert("Eroare la trimiterea cererii de oprire.");
       console.error(err);
     }
   };
@@ -180,11 +154,6 @@ function MainPage({ onLogout }) {
                 <span className={s.active ? "active" : "inactive"} style={{ marginLeft: 10 }}>
                   [{s.active ? "activă" : "inactivă"}]
                 </span>
-                {s.temporaryDisabled && (
-                  <span style={{ color: "orange", marginLeft: 10 }}>
-                    [dezactivată temporar]
-                  </span>
-                )}
                 <button
                   onClick={() => toggleActive(s._id, !s.active)}
                   className="button"
@@ -196,12 +165,6 @@ function MainPage({ onLogout }) {
                   className="button"
                 >
                   Șterge
-                </button>
-                <button
-                  onClick={() => toggleTemporary(s._id, !s.temporaryDisabled)}
-                  className="button"
-                >
-                  {s.temporaryDisabled ? "Repornește Temporar" : "Oprește Temporar"}
                 </button>
               </li>
             ))}
@@ -230,13 +193,6 @@ function MainPage({ onLogout }) {
             </button>
           </div>
         ))}
-      </div>
-
-      <div className="section">
-        <h3 className="title">Control Rapid:</h3>
-        <button onClick={handleImmediateStop} className="button">
-          Oprește programul ACUM
-        </button>
       </div>
     </div>
   );
