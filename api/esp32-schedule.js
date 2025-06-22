@@ -5,7 +5,7 @@ const uri = process.env.MONGODB_URI;
 let cachedClient = null;
 
 export default async function handler(req, res) {
-  const { id } = req.query;
+  const { id, checkOnly } = req.query;
 
   if (!id) {
     return res.status(400).json({ error: "Missing device ID in query" });
@@ -21,18 +21,23 @@ export default async function handler(req, res) {
     const collection = db.collection('schedules');
 
     const now = moment().tz("Europe/Bucharest");
-    const currentDay = now.format("dddd").toLowerCase(); // ex: "thursday"
-    const hour = now.hour();                              // ex: 21
-    const minute = now.minute();                          // ex: 35
+    const currentDay = now.format("dddd").toLowerCase();
+    const hour = now.hour();
+    const minute = now.minute();
 
-    const active = await collection.findOne({
+    const filter = {
       deviceId: id.toLowerCase(),
       day: currentDay,
-      hour: hour,
-      minute: minute,
-      active: true
-    });
+      hour,
+      active: true,
+    };
 
+    // dacă este doar o verificare în timpul execuției, ignorăm minutul
+    if (checkOnly !== 'true') {
+      filter.minute = minute;
+    }
+
+    const active = await collection.findOne(filter);
     res.status(200).json(active || {});
   } catch (err) {
     res.status(500).json({ error: 'Eroare MongoDB', details: err.message });
