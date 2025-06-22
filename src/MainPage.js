@@ -66,6 +66,17 @@ function MainPage({ onLogout }) {
     }
   };
 
+  const toggleTemporary = async (id, newState) => {
+  try {
+    await axios.patch(`/api/schedule?id=${id}`, { temporaryDisabled: newState });
+    fetchSchedules();
+  } catch (err) {
+    alert("Eroare la actualizare temporară.");
+    console.error(err);
+  }
+};
+
+
   const toggleActive = async (id, newState) => {
     try {
       await axios.patch(`/api/schedule?id=${id}`, { active: newState });
@@ -148,27 +159,39 @@ function MainPage({ onLogout }) {
           <p>Nu există programări.</p>
         ) : (
           <ul>
-            {schedules.map((s, i) => (
-              <li key={i}>
-                <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:{s.minute.toString().padStart(2, "0")} → {s.interval}s
-                <span className={s.active ? "active" : "inactive"} style={{ marginLeft: 10 }}>
-                  [{s.active ? "activă" : "inactivă"}]
-                </span>
-                <button
-                  onClick={() => toggleActive(s._id, !s.active)}
-                  className="button"
-                >
-                  {s.active ? "Dezactivează" : "Activează"}
-                </button>
-                <button
-                  onClick={() => handleDelete(s._id)}
-                  className="button"
-                >
-                  Șterge
-                </button>
-              </li>
-            ))}
-          </ul>
+  {schedules.map((s, i) => (
+    <li key={i}>
+      <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:{s.minute.toString().padStart(2, "0")} → {s.interval}s
+      <span className={s.active ? "active" : "inactive"} style={{ marginLeft: 10 }}>
+        [{s.active ? "activă" : "inactivă"}]
+      </span>
+      {s.temporaryDisabled && (
+        <span style={{ color: "orange", marginLeft: 10 }}>
+          [dezactivată temporar]
+        </span>
+      )}
+      <button
+        onClick={() => toggleActive(s._id, !s.active)}
+        className="button"
+      >
+        {s.active ? "Dezactivează" : "Activează"}
+      </button>
+      <button
+        onClick={() => handleDelete(s._id)}
+        className="button"
+      >
+        Șterge
+      </button>
+      <button
+        onClick={() => toggleTemporary(s._id, !s.temporaryDisabled)}
+        className="button"
+      >
+        {s.temporaryDisabled ? "Repornește Temporar" : "Oprește Temporar"}
+      </button>
+    </li>
+  ))}
+</ul>
+
         )}
       </div>
 

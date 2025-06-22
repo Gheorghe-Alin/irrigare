@@ -1,4 +1,3 @@
-// esp32-schedule.js
 import moment from 'moment-timezone';
 import { MongoClient } from 'mongodb';
 
@@ -24,13 +23,13 @@ export default async function handler(req, res) {
     const now = moment().tz("Europe/Bucharest");
     const currentDay = now.format("dddd").toLowerCase();
     const hour = now.hour();
-    // const minute = now.minute(); ❌ eliminăm filtrarea pe minut
 
     const active = await collection.findOne({
       deviceId: id.toLowerCase(),
       day: currentDay,
       hour,
-      active: true
+      active: true,
+      temporaryDisabled: { $ne: true } // ignoră dacă e oprit temporar
     });
 
     res.status(200).json(active || {});
