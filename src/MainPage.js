@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./MainPage.css"; // Asigură-te că acest fișier există
+import "./MainPage.css";
 
 const days = [
   "monday", "tuesday", "wednesday",
@@ -66,23 +66,22 @@ function MainPage({ onLogout }) {
     }
   };
 
-  const toggleTemporary = async (id, newState) => {
-  try {
-    await axios.patch(`/api/schedule?id=${id}`, { temporaryDisabled: newState });
-    fetchSchedules();
-  } catch (err) {
-    alert("Eroare la actualizare temporară.");
-    console.error(err);
-  }
-};
-
-
   const toggleActive = async (id, newState) => {
     try {
       await axios.patch(`/api/schedule?id=${id}`, { active: newState });
       fetchSchedules();
     } catch (err) {
       alert("Eroare la actualizare.");
+      console.error(err);
+    }
+  };
+
+  const toggleTemporary = async (id, newState) => {
+    try {
+      await axios.patch(`/api/schedule?id=${id}`, { temporaryDisabled: newState });
+      fetchSchedules();
+    } catch (err) {
+      alert("Eroare la actualizare temporară.");
       console.error(err);
     }
   };
@@ -99,6 +98,16 @@ function MainPage({ onLogout }) {
       });
     } catch (err) {
       alert("Eroare la actualizarea valvei.");
+      console.error(err);
+    }
+  };
+
+  const handleImmediateStop = async () => {
+    try {
+      await axios.post(`/api/stop-request?id=${deviceId}`, { stop: true });
+      alert("🛑 Cerere de oprire trimisă!");
+    } catch (err) {
+      alert("Eroare la trimiterea cererii de oprire.");
       console.error(err);
     }
   };
@@ -159,39 +168,38 @@ function MainPage({ onLogout }) {
           <p>Nu există programări.</p>
         ) : (
           <ul>
-  {schedules.map((s, i) => (
-    <li key={i}>
-      <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:{s.minute.toString().padStart(2, "0")} → {s.interval}s
-      <span className={s.active ? "active" : "inactive"} style={{ marginLeft: 10 }}>
-        [{s.active ? "activă" : "inactivă"}]
-      </span>
-      {s.temporaryDisabled && (
-        <span style={{ color: "orange", marginLeft: 10 }}>
-          [dezactivată temporar]
-        </span>
-      )}
-      <button
-        onClick={() => toggleActive(s._id, !s.active)}
-        className="button"
-      >
-        {s.active ? "Dezactivează" : "Activează"}
-      </button>
-      <button
-        onClick={() => handleDelete(s._id)}
-        className="button"
-      >
-        Șterge
-      </button>
-      <button
-        onClick={() => toggleTemporary(s._id, !s.temporaryDisabled)}
-        className="button"
-      >
-        {s.temporaryDisabled ? "Repornește Temporar" : "Oprește Temporar"}
-      </button>
-    </li>
-  ))}
-</ul>
-
+            {schedules.map((s, i) => (
+              <li key={i}>
+                <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:{s.minute.toString().padStart(2, "0")} → {s.interval}s
+                <span className={s.active ? "active" : "inactive"} style={{ marginLeft: 10 }}>
+                  [{s.active ? "activă" : "inactivă"}]
+                </span>
+                {s.temporaryDisabled && (
+                  <span style={{ color: "orange", marginLeft: 10 }}>
+                    [dezactivată temporar]
+                  </span>
+                )}
+                <button
+                  onClick={() => toggleActive(s._id, !s.active)}
+                  className="button"
+                >
+                  {s.active ? "Dezactivează" : "Activează"}
+                </button>
+                <button
+                  onClick={() => handleDelete(s._id)}
+                  className="button"
+                >
+                  Șterge
+                </button>
+                <button
+                  onClick={() => toggleTemporary(s._id, !s.temporaryDisabled)}
+                  className="button"
+                >
+                  {s.temporaryDisabled ? "Repornește Temporar" : "Oprește Temporar"}
+                </button>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
@@ -216,6 +224,13 @@ function MainPage({ onLogout }) {
             </button>
           </div>
         ))}
+      </div>
+
+      <div className="section">
+        <h3 className="title">Control Rapid:</h3>
+        <button onClick={handleImmediateStop} className="button">
+          Oprește programul ACUM
+        </button>
       </div>
     </div>
   );
