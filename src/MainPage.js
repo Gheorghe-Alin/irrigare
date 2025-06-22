@@ -75,23 +75,22 @@ function MainPage({ onLogout }) {
     }
   };
 
-  const toggleTemporary = async (id, newState) => {
-  try {
-    await axios.patch(`/api/schedule?id=${id}`, { temporaryDisabled: newState });
-    fetchSchedules();
-  } catch (err) {
-    alert("Eroare la actualizare temporară.");
-    console.error(err);
-  }
-};
-
-
   const toggleActive = async (id, newState) => {
     try {
       await axios.patch(`/api/schedule?id=${id}`, { active: newState });
       fetchSchedules();
     } catch (err) {
       alert("Eroare la actualizare.");
+      console.error(err);
+    }
+  };
+
+  const toggleTemporary = async (id, newState) => {
+    try {
+      await axios.patch(`/api/schedule?id=${id}`, { temporaryDisabled: newState });
+      fetchSchedules();
+    } catch (err) {
+      alert("Eroare la actualizare temporară.");
       console.error(err);
     }
   };
@@ -112,6 +111,16 @@ function MainPage({ onLogout }) {
       );
     } catch (err) {
       alert("❌ Eroare la actualizarea valvei.");
+      console.error(err);
+    }
+  };
+
+  const handleImmediateStop = async () => {
+    try {
+      await axios.post(`/api/stop-request?id=${deviceId}`, { stop: true });
+      alert("🛑 Cerere de oprire trimisă!");
+    } catch (err) {
+      alert("Eroare la trimiterea cererii de oprire.");
       console.error(err);
     }
   };
@@ -207,7 +216,6 @@ function MainPage({ onLogout }) {
           <p>Nu există programări.</p>
         ) : (
           <ul>
-
   {schedules.map((s, i) => (
     <li key={i}>
       <strong>{s.deviceId}</strong>: {s.day}, {s.hour}:{s.minute.toString().padStart(2, "0")} → {s.interval}s
@@ -240,6 +248,7 @@ function MainPage({ onLogout }) {
     </li>
   ))}
 </ul>
+
         )}
       </div>
 
@@ -267,6 +276,13 @@ function MainPage({ onLogout }) {
             </span>
           </div>
         ))}
+      </div>
+
+      <div className="section">
+        <h3 className="title">Control Rapid:</h3>
+        <button onClick={handleImmediateStop} className="button">
+          Oprește programul ACUM
+        </button>
       </div>
     </div>
   );
