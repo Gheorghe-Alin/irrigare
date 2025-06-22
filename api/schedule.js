@@ -1,4 +1,6 @@
+
 import { MongoClient, ObjectId } from "mongodb";
+
 
 const uri = process.env.MONGODB_URI;
 let cachedClient = null;
@@ -32,8 +34,7 @@ export default async function handler(req, res) {
         hour,
         minute,
         interval,
-        active: true,
-        temporaryDisabled: false // nou
+        active: true // implicit activ
       });
 
       return res.status(200).json({ success: true, id: result.insertedId });
@@ -48,28 +49,23 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true });
     }
 
-    // ✏️ PATCH – active sau temporaryDisabled
+    // ✏️ PATCH – actualizează active true/false
     if (req.method === 'PATCH') {
       const { id } = req.query;
-      const { active, temporaryDisabled } = req.body;
+      const { active } = req.body;
 
-      if (!id) return res.status(400).json({ error: 'ID lipsă' });
-
-      const updateFields = {};
-      if (typeof active === 'boolean') updateFields.active = active;
-      if (typeof temporaryDisabled === 'boolean') updateFields.temporaryDisabled = temporaryDisabled;
-
-      if (Object.keys(updateFields).length === 0) {
-        return res.status(400).json({ error: 'Nicio actualizare validă' });
+      if (!id || typeof active !== 'boolean') {
+        return res.status(400).json({ error: 'Date lipsă sau invalide' });
       }
 
       await collection.updateOne(
         { _id: new ObjectId(id) },
-        { $set: updateFields }
+        { $set: { active: active } }
       );
 
       return res.status(200).json({ success: true });
     }
+
 
     res.status(405).json({ error: "Method Not Allowed" });
 
