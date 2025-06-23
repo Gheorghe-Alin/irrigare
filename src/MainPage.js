@@ -117,18 +117,18 @@ function MainPage({ onLogout }) {
 
       <div className="section">
         <div>
+          <button onClick={handleReset} className="button">
+            ♻️ Reset ESP curent
+          </button>
+        </div>
+
+        <div>
           <label className="label">Dispozitiv:</label>
           <select value={deviceId} onChange={(e) => setDeviceId(e.target.value)} className="input">
             {devices.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
-        </div>
-
-        <div>
-          <button onClick={handleReset} className="button">
-            ♻️ Reset ESP curent
-          </button>
         </div>
 
         <div>
