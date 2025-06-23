@@ -130,7 +130,7 @@ function MainPage({ onLogout }) {
 
       <h2 className="title">Programare robineti</h2>
 
-      <div className="section" style={{ textAlign: "right" }}>
+      <div className="section">
         <div>
           <button onClick={handleReset} className="button">
             ♻️ Reset ESP curent
