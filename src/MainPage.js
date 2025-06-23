@@ -36,6 +36,16 @@ function MainPage({ onLogout }) {
     }
   };
 
+  const handleReset = async () => {
+    try {
+      await axios.post(`/api/reset?id=${deviceId}`);
+      alert(`♻️ Reset trimis pentru ${deviceId}`);
+    } catch (err) {
+      alert("❌ Eroare la resetare");
+      console.error(err);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const res = await axios.post("/api/schedule", {
@@ -113,6 +123,12 @@ function MainPage({ onLogout }) {
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <button onClick={handleReset} className="button">
+            ♻️ Reset ESP curent
+          </button>
         </div>
 
         <div>
