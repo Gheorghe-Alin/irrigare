@@ -36,6 +36,16 @@ function MainPage({ onLogout }) {
     }
   };
 
+  const handleReset = async () => {
+    try {
+      await axios.post(`/api/reset?id=${deviceId}`);
+      alert(`♻️ Reset trimis pentru ${deviceId}`);
+    } catch (err) {
+      alert("❌ Eroare la resetare");
+      console.error(err);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const res = await axios.post("/api/schedule", {
@@ -106,7 +116,13 @@ function MainPage({ onLogout }) {
       <h2 className="title">Programare Udare Valve</h2>
 
       <div className="section">
-        <div>
+        <div style={{ textAlign: "right", marginBottom: "20px" }}>
+          <button onClick={handleReset} className="button">
+            ♻️ Reset ESP curent
+          </button>
+        </div>
+
+        <div style={{ marginBottom: "15px" }}>
           <label className="label">Dispozitiv:</label>
           <select value={deviceId} onChange={(e) => setDeviceId(e.target.value)} className="input">
             {devices.map((d) => (
