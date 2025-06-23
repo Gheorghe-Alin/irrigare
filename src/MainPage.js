@@ -132,6 +132,12 @@ function MainPage({ onLogout }) {
 
       <div className="section">
         <div>
+          <button onClick={handleReset} className="button">
+            ♻️ Reset ESP curent
+          </button>
+        </div>
+
+        <div>
           <label className="label">Dispozitiv:</label>
           <select
             value={deviceId}
@@ -144,12 +150,6 @@ function MainPage({ onLogout }) {
               </option>
             ))}
           </select>
-        </div>
-
-        <div>
-          <button onClick={handleReset} className="button">
-            ♻️ Reset ESP curent
-          </button>
         </div>
 
         <div>
