@@ -236,7 +236,7 @@ function MainPage({ onLogout }) {
       </div>
 
       <div className="section">
-        <h3 className="title">Control manual individual (Robineti):</h3>
+        <h3 className="title">Control manual individual (Robineți):</h3>
         {valveStates.map((state, index) => (
           <div key={index}>
             Valvă {index + 1}:
