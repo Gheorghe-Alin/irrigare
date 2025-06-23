@@ -6,7 +6,6 @@ const days = [
   "monday", "tuesday", "wednesday",
   "thursday", "friday", "saturday", "sunday"
 ];
-
 const devices = ["esp1", "esp2"];
 
 function MainPage({ onLogout }) {
@@ -30,7 +29,12 @@ function MainPage({ onLogout }) {
   const fetchManualStates = async () => {
     try {
       const res = await axios.get(`/api/manual-control?id=${deviceId}`);
-      setValveStates(res.data.valveStates);
+      console.log("📥 valveStates primite:", res.data.valveStates); // DEBUG
+      if (Array.isArray(res.data.valveStates)) {
+        setValveStates(res.data.valveStates);
+      } else {
+        console.warn("⚠️ valveStates lipsă sau invalid:", res.data);
+      }
     } catch (err) {
       console.error("Eroare la preluarea stărilor manuale:", err);
     }
@@ -51,7 +55,6 @@ function MainPage({ onLogout }) {
       const res = await axios.post("/api/schedule", {
         deviceId, day, hour, minute, interval,
       });
-
       if (res.status === 200 && res.data.success) {
         alert("✅ Programare salvată!");
         fetchSchedules();
@@ -66,7 +69,6 @@ function MainPage({ onLogout }) {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Sigur vrei să ștergi această programare?")) return;
-
     try {
       await axios.delete(`/api/schedule?id=${id}`);
       fetchSchedules();
@@ -93,7 +95,7 @@ function MainPage({ onLogout }) {
 
     try {
       await axios.post("/api/manual-control", {
-        deviceId: deviceId,
+        deviceId,
         valveStates: updatedStates,
       });
     } catch (err) {
@@ -113,16 +115,18 @@ function MainPage({ onLogout }) {
         <button onClick={onLogout} className="button">Logout</button>
       </div>
 
+
       <h2 className="title">Programare Udare Valve</h2>
 
+
       <div className="section">
-        <div style={{ textAlign: "right", marginBottom: "20px" }}>
+        <div style={{ marginBottom: "10px" }}>
           <button onClick={handleReset} className="button">
             ♻️ Reset ESP curent
           </button>
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
+        <div>
           <label className="label">Dispozitiv:</label>
           <select value={deviceId} onChange={(e) => setDeviceId(e.target.value)} className="input">
             {devices.map((d) => (
@@ -189,7 +193,9 @@ function MainPage({ onLogout }) {
       </div>
 
       <div className="section">
-        <h3 className="title">Control Manual Individual (Valve):</h3>
+
+        <h3 className="title">Control manual individual (Robineți):</h3>
+
         {valveStates.map((state, index) => (
           <div key={index}>
             Valvă {index + 1}:
@@ -207,6 +213,9 @@ function MainPage({ onLogout }) {
             >
               OFF
             </button>
+
+            <span style={{ marginLeft: 10, fontWeight: 500 }}>
+              ({state ? "Pornită" : "Oprită"})
           </div>
         ))}
       </div>
