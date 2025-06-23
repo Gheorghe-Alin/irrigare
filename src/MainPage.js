@@ -115,7 +115,7 @@ function MainPage({ onLogout }) {
 
       <h2 className="title">Programare Udare Valve</h2>
 
-      <div className="section">
+      <div className="section" style={{ textAlign: "right" }}>
         <div>
           <button onClick={handleReset} className="button">
             ♻️ Reset ESP curent
