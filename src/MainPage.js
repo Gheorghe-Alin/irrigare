@@ -11,7 +11,6 @@ const days = [
   "saturday",
   "sunday",
 ];
-
 const devices = ["esp1", "esp2"];
 
 function MainPage({ onLogout }) {
@@ -35,7 +34,12 @@ function MainPage({ onLogout }) {
   const fetchManualStates = async () => {
     try {
       const res = await axios.get(`/api/manual-control?id=${deviceId}`);
-      setValveStates(res.data.valveStates);
+      console.log("📥 valveStates primite:", res.data.valveStates); // DEBUG
+      if (Array.isArray(res.data.valveStates)) {
+        setValveStates(res.data.valveStates);
+      } else {
+        console.warn("⚠️ valveStates lipsă sau invalid:", res.data);
+      }
     } catch (err) {
       console.error("Eroare la preluarea stărilor manuale:", err);
     }
@@ -60,7 +64,6 @@ function MainPage({ onLogout }) {
         minute,
         interval,
       });
-
       if (res.status === 200 && res.data.success) {
         alert("✅ Programare salvată!");
         fetchSchedules();
@@ -75,7 +78,6 @@ function MainPage({ onLogout }) {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Sigur vrei să ștergi această programare?")) return;
-
     try {
       await axios.delete(`/api/schedule?id=${id}`);
       fetchSchedules();
@@ -102,13 +104,9 @@ function MainPage({ onLogout }) {
 
     try {
       await axios.post("/api/manual-control", {
-        deviceId: deviceId,
+        deviceId,
         valveStates: updatedStates,
       });
-
-      alert(
-        `✅ Valva ${index + 1} ${newState ? "pornită" : "oprită"} cu succes.`
-      );
     } catch (err) {
       alert("❌ Eroare la actualizarea valvei.");
       console.error(err);
@@ -128,16 +126,16 @@ function MainPage({ onLogout }) {
         </button>
       </div>
 
-      <h2 className="title">Programare robineti</h2>
+      <h2 className="title">Programare robineți</h2>
 
       <div className="section">
-        <div style={{ textAlign: "right", marginBottom: "20px" }}>
+        <div style={{ marginBottom: "10px" }}>
           <button onClick={handleReset} className="button">
             ♻️ Reset ESP curent
           </button>
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
+        <div>
           <label className="label">Dispozitiv:</label>
           <select
             value={deviceId}
@@ -238,26 +236,26 @@ function MainPage({ onLogout }) {
       </div>
 
       <div className="section">
-        <h3 className="title">Control manual individual (Robineti):</h3>
+        <h3 className="title">Control manual individual (Robineți):</h3>
         {valveStates.map((state, index) => (
           <div key={index}>
             Valvă {index + 1}:
             <button
               onClick={() => updateValveState(index, true)}
-              disabled={valveStates[index]}
+              disabled={state}
               className="button"
             >
               ON
             </button>
             <button
               onClick={() => updateValveState(index, false)}
-              disabled={!valveStates[index]}
+              disabled={!state}
               className="button"
             >
               OFF
             </button>
             <span style={{ marginLeft: 10, fontWeight: 500 }}>
-              ({valveStates[index] ? "Pornită" : "Oprită"})
+              ({state ? "Pornită" : "Oprită"})
             </span>
           </div>
         ))}
