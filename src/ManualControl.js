@@ -6,30 +6,19 @@ function ManualControl({ deviceId }) {
   const [loading, setLoading] = useState(false);
 
   const fetchValves = async () => {
-    try {
-      const res = await axios.get(`/api/manual-control?id=${deviceId}`);
-      console.log("📥 API valveStates:", res.data.valveStates); // DEBUG
-      if (Array.isArray(res.data.valveStates)) {
-        setValves(res.data.valveStates);
-      } else {
-        console.warn("⚠️ valveStates lipsă sau invalid:", res.data);
-      }
-    } catch (err) {
-      console.error("❌ Eroare la fetch valveStates:", err);
-    }
+    const res = await axios.get(`/api/manual-control?id=${deviceId}`);
+    setValves(res.data.valves);
   };
 
   const updateValves = async (newState) => {
     setLoading(true);
     try {
-      await axios.post(`/api/manual-control`, {
-        deviceId,
-        valveStates: newState,
+      await axios.post(`/api/manual-control?id=${deviceId}`, {
+        valves: newState,
       });
       setValves(newState);
     } catch (err) {
-      alert("❌ Eroare la actualizare valve.");
-      console.error(err);
+      alert("Eroare la actualizare valve.");
     } finally {
       setLoading(false);
     }
@@ -43,7 +32,7 @@ function ManualControl({ deviceId }) {
 
   useEffect(() => {
     fetchValves();
-  }, [deviceId]);
+  }, []);
 
   return (
     <div>
@@ -57,7 +46,6 @@ function ManualControl({ deviceId }) {
             onChange={() => toggleValve(i)}
             disabled={loading}
           />
-          <span style={{ marginLeft: 10 }}>({v ? "Pornită" : "Oprită"})</span>
         </div>
       ))}
     </div>
