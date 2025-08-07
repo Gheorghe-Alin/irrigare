@@ -1,18 +1,13 @@
-import moment from 'moment-timezone';
-import { MongoClient } from 'mongodb';
+Schedule;
+import moment from "moment-timezone";
+import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI;
 let cachedClient = null;
 
 export default async function handler(req, res) {
-  const { id } = req.query;
-
-  if (!id) {
-
-    return res.status(400).json({ error: "Missing device ID in query" });
-
-
-  }
+  const { id, checkOnly } = req.query;
+  if (!id) return res.status(400).json({ error: "Missing device ID" });
 
   try {
     if (!cachedClient) {
@@ -20,29 +15,28 @@ export default async function handler(req, res) {
       await cachedClient.connect();
     }
 
-    const db = cachedClient.db('relay');
-    const collection = db.collection('schedules');
+    const db = cachedClient.db("relay");
+    const collection = db.collection("schedules");
 
     const now = moment().tz("Europe/Bucharest");
-
-    const currentDay = now.format("dddd").toLowerCase();
-
-
+    const day = now.format("dddd").toLowerCase();
     const hour = now.hour();
     const minute = now.minute();
 
-    const active = await collection.findOne({
+    const filter = {
       deviceId: id.toLowerCase(),
-      day: currentDay,
+      day,
       hour,
-      minute,
-
       active: true,
+    };
 
-    });
+    if (checkOnly !== "true") {
+      filter.minute = { $gte: minute }; // ⬅️ doar în sus!
+    }
 
-    res.status(200).json(active || {});
+    const match = await collection.findOne(filter);
+    res.status(200).json(match || {});
   } catch (err) {
-    res.status(500).json({ error: 'Eroare MongoDB', details: err.message });
+    res.status(500).json({ error: "MongoDB Error", details: err.message });
   }
 }
